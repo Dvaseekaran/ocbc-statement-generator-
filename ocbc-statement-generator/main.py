@@ -41,15 +41,16 @@ LOGO_PATH = os.path.join(os.path.dirname(__file__), "static", "images", "ocbc_lo
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     try:
-        # Map language codes to display names
         language_display = {
             "en": "English",
             "zh": "中文",
             "ta": "தமிழ்",
             "ms": "Bahasa Melayu"
         }
+        logo_url = os.environ.get("LOGO_URL", "/static/images/ocbc_logo.png")
         return templates.TemplateResponse("index.html", {
             "request": request,
+            "logo_url": logo_url,
             "languages": list(LANGUAGES.keys()),
             "language_display": language_display
         })
@@ -91,7 +92,7 @@ html_template = """
 </head>
 <body>
     <div class="header">
-        <img src="static/images/ocbc_logo.png" class="logo">
+        <img src="{{ logo_url }}" class="logo">
         <div class="statement-info">
             <div><b>{{ statement_title }}</b></div>
             <div>{{ statement_period_label }}: {{ statement_period }}</div>
@@ -383,7 +384,8 @@ async def generate_statement(
             "card_number_label": lang["card_number"],
             "statement_period_label": lang["statement_period"],
             "footer_label": lang["footer"],
-            "signature_note_label": lang["signature_note"]
+            "signature_note_label": lang["signature_note"],
+            "logo_url": os.environ.get("LOGO_URL", "/static/images/ocbc_logo.png"),
         }
 
         # Remove the duplicate LANGUAGES dictionary and read_root function from here
@@ -392,6 +394,9 @@ async def generate_statement(
         html = templates.get_template("statement_template.html").render(template_data)
         
         # Generate PDF using WeasyPrint
+        # Use absolute file path for logo in PDF
+        logo_path_pdf = os.path.abspath(os.path.join(os.path.dirname(__file__), "static", "images", "ocbc_logo.png"))
+        template_data["logo_url"] = f"file:///{logo_path_pdf.replace(os.sep, '/')}"
         html = templates.get_template("statement_template.html").render(template_data)
         pdf = weasyprint.HTML(string=html, base_url=str(Path(__file__).parent))
         pdf.write_pdf(pdf_filename, presentational_hints=True)  # Add presentational_hints
