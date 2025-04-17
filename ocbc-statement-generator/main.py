@@ -11,6 +11,9 @@ from models import Base, Transaction
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import random
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -47,10 +50,10 @@ async def read_root(request: Request):
             "ta": "தமிழ்",
             "ms": "Bahasa Melayu"
         }
-        logo_url = os.environ.get("LOGO_URL", "/static/images/ocbc_logo.png")
+        LOGO_URL = os.getenv("LOGO_URL")
         return templates.TemplateResponse("index.html", {
             "request": request,
-            "logo_url": logo_url,
+            "logo_url": LOGO_URL,
             "languages": list(LANGUAGES.keys()),
             "language_display": language_display
         })
@@ -61,6 +64,8 @@ async def read_root(request: Request):
 # Create templates directory for HTML templates
 templates_dir = Path(__file__).parent / "templates"
 templates_dir.mkdir(exist_ok=True)
+print("LOGO_URL =", os.getenv("LOGO_URL"))
+
 
 # Create HTML template for the statement
 html_template = """
