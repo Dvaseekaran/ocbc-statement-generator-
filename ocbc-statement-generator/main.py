@@ -112,7 +112,7 @@ html_template = """
     </div>
 
     <div class="campaign-box">
-        <b>Credit Card eStatement Campaign 2024</b><br>
+        <b>Credit Card eStatement Campaign 2025</b><br>
         Switch to eStatements now and stand a chance to win exciting prizes!<br>
         Go paperless to reduce your carbon footprint and enjoy hassle-free banking.
     </div>
