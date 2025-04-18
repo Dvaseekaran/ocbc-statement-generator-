@@ -20,7 +20,7 @@
         .transactions-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .transactions-table th, .transactions-table td { padding: 8px 10px; border-bottom: 1px solid #eee; font-size: 13px; }
         .transactions-table th { background: #f8f8f8; color: #dc1f27; text-align: left; }
-        .transactions-table td.amount { text-align: right; }
+        .transactions-table td.amount { text-align: left; } /* <-- Change from right to left */
         .campaign-box { border: 2px solid #dc1f27; background: #fff6f6; color: #dc1f27; text-align: center; font-size: 15px; margin-bottom: 20px; }
         .footer { margin-top: 30px; font-size: 12px; color: #666; text-align: center; }
     </style>
@@ -98,7 +98,7 @@
                 <td>{{ tx.date.strftime('%d/%m/%Y') }}</td>
                 <td>{{ tx.merchant }}</td>
                 <td>{{ tx.category }}</td>
-                <td class="amount">${{ "%.2f"|format(tx.amount) }}</td>
+                <td class="amount">{{ "%.2f"|format(tx.amount) }}</td> <!-- Remove $ from here -->
                 <td class="amount">{{ tx.points }}</td>
             </tr>
             {% endfor %}

@@ -90,7 +90,7 @@ html_template = """
         .transactions-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .transactions-table th, .transactions-table td { padding: 8px 10px; border-bottom: 1px solid #eee; font-size: 13px; }
         .transactions-table th { background: #f8f8f8; color: #dc1f27; text-align: left; }
-        .transactions-table td.amount { text-align: right; }
+        .transactions-table td.amount { text-align: left; } /* <-- Change from right to left */
         .campaign-box { border: 2px solid #dc1f27; background: #fff6f6; color: #dc1f27; text-align: center; font-size: 15px; margin-bottom: 20px; }
         .footer { margin-top: 30px; font-size: 12px; color: #666; text-align: center; }
     </style>
@@ -168,7 +168,7 @@ html_template = """
                 <td>{{ tx.date.strftime('%d/%m/%Y') }}</td>
                 <td>{{ tx.merchant }}</td>
                 <td>{{ tx.category }}</td>
-                <td class="amount">${{ "%.2f"|format(tx.amount) }}</td>
+                <td class="amount">{{ "%.2f"|format(tx.amount) }}</td> <!-- Remove $ from here -->
                 <td class="amount">{{ tx.points }}</td>
             </tr>
             {% endfor %}
@@ -252,7 +252,7 @@ LANGUAGES = {
         "signature_note": "这是计算机生成的声明，无需签名"
     },
     "ta": {
-        "title": "கடன் அட்டை அறிக்கை",
+        "title": "கடன் அட்டை அருக்கம்",
         "account_summary": "கணக்கு சுருக்கம்",
         "credit_limit": "கடன் வரம்பு",
         "previous_balance": "முந்தைய இருப்பு",
@@ -331,6 +331,14 @@ async def generate_statement(
         dining_transactions = [tx for tx in transactions if tx.category == "Dining"]
         dining_rewards = sum(tx.amount * 0.6 for tx in dining_transactions)
 
+        # Assign points to each transaction
+        for tx in transactions:
+            if tx.category == "Dining":
+                tx.points = round(tx.amount * 0.6)
+            else:
+                tx.points = round(tx.amount * 0.4)
+
+        # Prepare template data with improved alignment
         # Generate PDF filename
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         pdf_filename = f"generated_statements/statement_{card_id}_{timestamp}.pdf"
